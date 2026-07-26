@@ -16,6 +16,9 @@ permissions:
 jobs:
   scrape:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: jobwatch
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
