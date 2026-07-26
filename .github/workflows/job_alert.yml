@@ -1,0 +1,52 @@
+name: Job Alert Scraper
+
+on:
+  schedule:
+    - cron: "0 */3 * * *"   # every 3 hours (UTC)
+  workflow_dispatch:         # lets you trigger it manually from the Actions tab
+    inputs:
+      dry_run:
+        description: "Dry run (print matches, don't send Telegram messages)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write            # needed to commit the updated seen_jobs.json back
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run job scraper (normal)
+        if: ${{ github.event.inputs.dry_run != 'true' }}
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python src/main.py
+
+      - name: Run job scraper (dry run)
+        if: ${{ github.event.inputs.dry_run == 'true' }}
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python src/main.py --dry-run
+
+      - name: Commit updated seen_jobs.json
+        if: ${{ github.event.inputs.dry_run != 'true' }}
+        run: |
+          git config user.name "job-alert-bot"
+          git config user.email "actions@github.com"
+          git add data/seen_jobs.json
+          git diff --staged --quiet || git commit -m "Update seen jobs [skip ci]"
+          git push
