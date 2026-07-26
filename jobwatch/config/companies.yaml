@@ -1,0 +1,214 @@
+# =============================================================================
+# COMPANY CONFIG
+# =============================================================================
+# Each entry tells the scraper HOW to fetch jobs for that company.
+#
+# ats types supported out of the box:
+#   greenhouse  -> needs: board_token
+#   lever       -> needs: company_slug
+#   workday     -> needs: tenant, site  (see notes below)
+#   custom      -> handled by a dedicated function in src/custom_sites.py
+#
+# HOW TO FIND board_token / company_slug / tenant+site (2 minutes per company):
+#   Greenhouse: open the company's careers page, look at network tab (F12) for
+#               a request to boards-api.greenhouse.io/v1/boards/<TOKEN>/jobs
+#               or the URL is often boards.greenhouse.io/<TOKEN>
+#   Lever:      URL is usually jobs.lever.co/<SLUG>
+#   Workday:    URL looks like https://<tenant>.wd5.myworkdayjobs.com/<site>
+#               tenant = the subdomain before .wdN.myworkdayjobs.com
+#               site   = the path segment right after the domain
+#
+# I have pre-filled the ones I'm confident about. Entries marked
+# "VERIFY" are my best guess from training data and MUST be checked once —
+# just run `python src/main.py --check-config` after deployment and it will
+# tell you which ones 404 so you can fix the token in 2 minutes.
+# =============================================================================
+
+companies:
+  # ---------------- Greenhouse ----------------
+  - name: Databricks
+    ats: greenhouse
+    board_token: databricks
+  - name: Notion
+    ats: ashby
+    job_board_name: notion
+  - name: Confluent
+    ats: ashby
+    job_board_name: confluent
+  - name: Rippling
+    ats: custom
+    handler: rippling   # uses ats.rippling.com, not Greenhouse - no stable public API found; placeholder
+  - name: Airbnb
+    ats: greenhouse
+    board_token: airbnb
+  - name: Coinbase
+    ats: greenhouse
+    board_token: coinbase
+  - name: Discord
+    ats: greenhouse
+    board_token: discord
+  - name: Figma
+    ats: greenhouse
+    board_token: figma
+  - name: Stripe
+    ats: greenhouse
+    board_token: stripe          # VERIFY
+  - name: Pinterest
+    ats: greenhouse
+    board_token: pinterest       # VERIFY
+  - name: Reddit
+    ats: greenhouse
+    board_token: reddit          # VERIFY
+  - name: Robinhood
+    ats: greenhouse
+    board_token: robinhood       # VERIFY
+  - name: Zeta
+    ats: lever
+    company_slug: zeta
+  - name: Fractal Analytics
+    ats: greenhouse
+    board_token: fractal          # VERIFY
+  - name: Cohesity
+    ats: greenhouse
+    board_token: cohesity         # VERIFY
+  - name: Abnormal Security
+    ats: greenhouse
+    board_token: abnormalsecurity # VERIFY
+  - name: Spotnana
+    ats: greenhouse
+    board_token: spotnana         # VERIFY
+  - name: Moveworks
+    ats: greenhouse
+    board_token: moveworks        # VERIFY
+  - name: Rubrik
+    ats: greenhouse
+    board_token: rubrik           # VERIFY
+  - name: Yugabyte
+    ats: greenhouse
+    board_token: yugabyte         # VERIFY
+
+  # ---------------- Lever ----------------
+  - name: Palantir
+    ats: lever
+    company_slug: palantir        # VERIFY
+  - name: Plaid
+    ats: lever
+    company_slug: plaid           # VERIFY
+  - name: Uber
+    ats: custom                   # Uber uses its own careers platform, not Lever
+    handler: uber
+
+  # ---------------- Workday ----------------
+  # tenant / site pairs below are best-effort guesses (VERIFY marked).
+  - name: JPMorgan Chase
+    ats: workday
+    tenant: jpmc
+    site: JPMC_EXTERNAL           # VERIFY
+  - name: Morgan Stanley
+    ats: workday
+    tenant: morganstanley
+    site: External                # VERIFY
+  - name: Barclays
+    ats: workday
+    tenant: barclays
+    site: External                # VERIFY
+  - name: HSBC
+    ats: workday
+    tenant: hsbc
+    site: External_Careers        # VERIFY
+  - name: Visa
+    ats: workday
+    tenant: visa
+    site: Visa
+    wd_num: 5           # confirmed live
+  - name: Mastercard
+    ats: workday
+    tenant: mastercard
+    site: mastercard_careers      # VERIFY
+  - name: Walmart
+    ats: workday
+    tenant: walmart
+    site: WalmartExternal         # VERIFY
+  - name: ServiceNow
+    ats: workday
+    tenant: servicenow
+    site: Careers                 # VERIFY
+  - name: Qualcomm
+    ats: workday
+    tenant: qualcomm
+    site: External                # VERIFY
+  - name: Honeywell
+    ats: workday
+    tenant: honeywell
+    site: EXTERNALCAREERS         # VERIFY
+  - name: S&P Global
+    ats: workday
+    tenant: spglobal
+    site: SPGI_Careers            # VERIFY
+  - name: HP
+    ats: workday
+    tenant: hp
+    site: External                # VERIFY
+  - name: Deutsche Bank
+    ats: workday
+    tenant: db
+    site: DBWebsite               # VERIFY
+  - name: Standard Chartered
+    ats: workday
+    tenant: standardchartered
+    site: Standard_Chartered_Careers # VERIFY
+
+  # ---------------- Custom sites (dedicated scrapers) ----------------
+  - name: Google
+    ats: custom
+    handler: google
+  - name: Amazon
+    ats: custom
+    handler: amazon
+  - name: Microsoft
+    ats: custom
+    handler: microsoft
+  - name: Meta
+    ats: custom
+    handler: meta
+
+  # ---------------- Indian startups ----------------
+  - name: CRED
+    ats: lever
+    company_slug: cred            # confirmed live
+  - name: Razorpay
+    ats: greenhouse
+    board_token: razorpaysoftwareprivatelimited   # confirmed live
+  - name: Meesho
+    ats: lever
+    company_slug: meesho          # confirmed live
+  - name: Flipkart
+    ats: custom
+    handler: flipkart              # VERIFY - Flipkart uses its own careers site
+  - name: Swiggy
+    ats: greenhouse
+    board_token: swiggy            # VERIFY
+  - name: Zomato
+    ats: custom
+    handler: zomato                # VERIFY
+  - name: PhonePe
+    ats: greenhouse
+    board_token: phonepe          # confirmed live
+  - name: Groww
+    ats: greenhouse
+    board_token: groww              # VERIFY
+  - name: Myntra
+    ats: custom
+    handler: myntra                 # VERIFY
+
+# =============================================================================
+# NOTE: This file intentionally does NOT include every company from your list
+# (150+). Quant/prop-trading firms (Jane Street, HRT, Two Sigma, Citadel, DRW,
+# Optiver, IMC, SIG, XTX, Tower Research, AQR, Squarepoint, Jump Trading...)
+# rarely post numbered "SDE1/SDE2" roles for India and mostly hire via
+# campus/referral, so they're left out of v1 - add them the same way if you
+# want them included, using "software engineer" as the title filter regardless
+# of level since they don't level-number titles.
+#
+# Add any company by copy-pasting a block above and filling in its token.
+# =============================================================================
